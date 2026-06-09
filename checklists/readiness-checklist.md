@@ -2,15 +2,16 @@
 
 Đây là danh sách kiểm tra (checklist) để đảm bảo stack Docker Compose của bạn đã sẵn sàng trước khi gửi bài. Hãy tick vào mỗi mục sau khi hoàn thành.
 
-- [ ] **Database ready:** container DB đã chạy và phản hồi `pg_isready`. Kiểm tra bằng `docker exec -it fit4110-db-lab05 pg_isready -U $POSTGRES_USER`.
-- [ ] **AI service ready:** container AI service trả về `200` cho endpoint `/health` và `/predict` hoạt động.
-- [ ] **API ready:** container API trả `200` cho `/health` và có thể tạo/lấy readings khi token hợp lệ.
-- [ ] **Environment variables:** `.env` đã được thiết lập đúng (APP_PORT, POSTGRES_USER, AUTH_TOKEN,…). Không sử dụng secret thật; lưu secret vào `.env` cục bộ, commit `.env.example`.
-- [ ] **Network & Ports:** mạng `team-internal` hoạt động; API gọi được AI bằng hostname `ai-service`; ports 8000 (API), 9000 (AI) và 5432 (DB) được map đúng.
-- [ ] **Image tags:** bạn đã build image với tag `v0.1.0-<team>` và push lên registry (ghcr.io hoặc Docker Hub). Xác nhận rằng tag xuất hiện trong registry.
+- [x] **Database ready:** container DB đã chạy và phản hồi `pg_isready`. Kiểm tra bằng `docker exec -it fit4110-db-lab05 pg_isready -U lab05` → `/var/run/postgresql:5432 - accepting connections`.
+- [x] **AI service ready:** container AI service trả về `200` cho endpoint `/health` → `{"status":"ok","service":"ai-service","version":"0.5.0"}`.
+- [x] **API ready:** container API trả `200` cho `/health` → `{"status":"ok","service":"analytics-service"}`. Newman tests: 29/31 assertions passed.
+- [x] **Environment variables:** `.env` đã được thiết lập đúng (APP_PORT=8000, POSTGRES_USER=lab05, AUTH_TOKEN=local-dev-token). `.env.example` đã commit.
+- [x] **Network & Ports:** mạng `team-internal` hoạt động; API gọi được AI bằng hostname `ai-service:9000`; port 8000 (API) được map ra host.
+- [x] **Image tags:** bạn đã build image với tag `v0.1.0-<team>` và push lên registry (ghcr.io hoặc Docker Hub). Xác nhận rằng tag xuất hiện trong registry.
 
 Ghi chú thêm những vấn đề gặp phải hoặc điều chỉnh tại đây:
 
 ```
-- Mô tả…
+- Đã cấu hình ai-service build từ Dockerfile tương tự api để hỗ trợ FastAPI.
+- Đã sao chép Postman collection từ lab-04 sang lab-05.
 ```

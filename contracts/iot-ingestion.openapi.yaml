@@ -1,32 +1,37 @@
 openapi: 3.1.0
 info:
-  title: FIT4110 Lab 05 - IoT Ingestion API
-  version: 0.5.0
+  title: Smart Campus — IoT Ingestion API
+  version: 0.3.0
   description: |
-    Contract dùng cho Lab 05 Docker Compose readiness, kế thừa logic của Lab 03/04.
-    Payload chính dùng các trường device_id, metric, value, unit và timestamp.
-    Boundary minh hoạ cho temperature là -40 đến 80.
+    Contract mẫu dùng cho FIT4110 Lab 03 — Postman, Mock Server và Contract Testing.
+    Sinh viên có thể thay thế file này bằng openapi.yaml của service nhóm mình từ Lab 02.
 servers:
-  - url: http://localhost:8000
-    description: Local or Docker Compose API service
   - url: http://localhost:4010
     description: Prism mock server
+  - url: http://localhost:8000
+    description: Local development server
 tags:
-  - name: system
-    description: Health and runtime information
   - name: readings
     description: Sensor telemetry ingestion
-
+  - name: system
+    description: Health and runtime information
 security:
   - bearerAuth: []
-
 paths:
   /health:
+    head:
+      tags: [system]
+      operationId: headHealth
+      summary: Kiểm tra trạng thái service bằng HEAD
+      security: []
+      responses:
+        "200":
+          description: Service đang hoạt động
     get:
       tags: [system]
       operationId: getHealth
       summary: Kiểm tra trạng thái service
-      description: Public health check dùng để kiểm tra container hoặc mock server đã sẵn sàng.
+      description: Public health check dùng để kiểm tra mock/service đã sẵn sàng.
       security: []
       responses:
         "200":
@@ -40,7 +45,7 @@ paths:
                   value:
                     status: ok
                     service: iot-ingestion
-                    version: 0.5.0
+                    version: 0.3.0
 
   /readings:
     post:
@@ -51,6 +56,7 @@ paths:
         Endpoint nhận telemetry từ ESP32 hoặc gateway.
         Request phải có device_id, metric, value và timestamp.
         Trong lab này, ví dụ boundary dùng nhiệt độ hợp lệ từ -40 đến 80.
+        Các nhóm có thể điều chỉnh miền giá trị theo service thật của mình.
       requestBody:
         required: true
         content:
@@ -75,11 +81,6 @@ paths:
       responses:
         "201":
           description: Đã ghi nhận bản đọc cảm biến
-          headers:
-            X-Warning:
-              description: Warning trả về khi reading được chấp nhận nhưng có rủi ro, ví dụ nhiệt độ cao.
-              schema:
-                type: string
           content:
             application/json:
               schema:
@@ -92,6 +93,27 @@ paths:
                     metric: temperature
                     accepted: true
                     created_at: "2026-05-13T08:30:01+07:00"
+        "400":
+          description: Request không hợp lệ
+          content:
+            application/problem+json:
+              schema:
+                $ref: "#/components/schemas/ProblemDetails"
+              examples:
+                missing_device:
+                  value:
+                    type: https://smart-campus.local/problems/validation-error
+                    title: Validation error
+                    status: 400
+                    detail: device_id is required
+                    instance: /readings
+                value_out_of_range:
+                  value:
+                    type: https://smart-campus.local/problems/value-out-of-range
+                    title: Value out of range
+                    status: 400
+                    detail: temperature must be between -40 and 80
+                    instance: /readings
         "401":
           description: Thiếu hoặc sai token
           content:
@@ -106,26 +128,20 @@ paths:
                     status: 401
                     detail: Missing or invalid bearer token
                     instance: /readings
-        "422":
-          description: Request không hợp lệ
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-              examples:
-                validation_error:
-                  value:
-                    type: https://smart-campus.local/problems/validation-error
-                    title: Validation error
-                    status: 422
-                    detail: body.value must be less than or equal to 80
-                    instance: /readings
         "429":
           description: Thiết bị gửi dữ liệu quá nhiều trong thời gian ngắn
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
+              examples:
+                rate_limited:
+                  value:
+                    type: https://smart-campus.local/problems/rate-limited
+                    title: Too Many Requests
+                    status: 429
+                    detail: Device exceeded allowed telemetry rate
+                    instance: /readings
 
   /readings/latest:
     get:
@@ -172,86 +188,46 @@ paths:
                         value: 31.5
                         unit: celsius
                         timestamp: "2026-05-13T08:30:00+07:00"
-                        created_at: "2026-05-13T08:30:01+07:00"
-        "401":
-          description: Thiếu hoặc sai token
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
-        "422":
+        "400":
           description: Query parameter không hợp lệ
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
-
-  /readings/{reading_id}:
-    get:
-      tags: [readings]
-      operationId: getReadingById
-      summary: Lấy chi tiết một bản ghi cảm biến
-      parameters:
-        - name: reading_id
-          in: path
-          required: true
-          schema:
-            type: string
-            pattern: "^R-[0-9]{8}-[0-9]{4}$"
-          example: R-20260513-0001
-      responses:
-        "200":
-          description: Chi tiết bản ghi cảm biến
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/SensorReading"
               examples:
-                reading:
+                invalid_limit:
                   value:
-                    reading_id: R-20260513-0001
-                    device_id: ESP32-LAB-A01
-                    metric: temperature
-                    value: 31.5
-                    unit: celsius
-                    timestamp: "2026-05-13T08:30:00+07:00"
-                    created_at: "2026-05-13T08:30:01+07:00"
+                    type: https://smart-campus.local/problems/validation-error
+                    title: Validation error
+                    status: 400
+                    detail: limit must be between 1 and 100
+                    instance: /readings/latest
         "401":
           description: Thiếu hoặc sai token
           content:
             application/problem+json:
               schema:
                 $ref: "#/components/schemas/ProblemDetails"
-        "404":
-          description: Không tìm thấy bản ghi
-          content:
-            application/problem+json:
-              schema:
-                $ref: "#/components/schemas/ProblemDetails"
               examples:
-                not_found:
+                unauthorized:
                   value:
-                    type: https://smart-campus.local/problems/not-found
-                    title: Not Found
-                    status: 404
-                    detail: Reading R-20260513-9999 does not exist
-                    instance: /readings/R-20260513-9999
+                    type: https://smart-campus.local/problems/unauthorized
+                    title: Unauthorized
+                    status: 401
+                    detail: Missing or invalid bearer token
+                    instance: /readings/latest
 
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
-      bearerFormat: token
+      bearerFormat: JWT
 
   schemas:
     SensorMetric:
       type: string
       enum: [temperature, humidity, motion, smoke]
-
-    SensorUnit:
-      type: string
-      enum: [celsius, percent, boolean, ppm]
 
     SensorReadingCreate:
       type: object
@@ -268,11 +244,14 @@ components:
           minimum: -40
           maximum: 80
           description: |
-            Giá trị mẫu dùng cho boundary test trong Lab 03 và Lab 04.
+            Giá trị mẫu dùng cho boundary test trong Lab 03.
             Với metric=temperature, miền hợp lệ minh họa là -40 đến 80.
+            Các nhóm cần thay đổi min/max cho đúng nghiệp vụ của service mình.
           example: 31.5
         unit:
-          $ref: "#/components/schemas/SensorUnit"
+          type: string
+          enum: [celsius, percent, boolean, ppm]
+          example: celsius
         timestamp:
           type: string
           format: date-time
@@ -282,16 +261,11 @@ components:
       allOf:
         - $ref: "#/components/schemas/SensorReadingCreate"
         - type: object
-          required: [reading_id, created_at]
+          required: [reading_id]
           properties:
             reading_id:
               type: string
-              pattern: "^R-[0-9]{8}-[0-9]{4}$"
               example: R-20260513-0001
-            created_at:
-              type: string
-              format: date-time
-              example: "2026-05-13T08:30:01+07:00"
 
     SensorReadingCreated:
       type: object
@@ -299,7 +273,6 @@ components:
       properties:
         reading_id:
           type: string
-          pattern: "^R-[0-9]{8}-[0-9]{4}$"
           example: R-20260513-0001
         device_id:
           type: string
@@ -327,7 +300,7 @@ components:
           example: iot-ingestion
         version:
           type: string
-          example: 0.5.0
+          example: 0.3.0
 
     ProblemDetails:
       type: object
@@ -335,18 +308,14 @@ components:
       properties:
         type:
           type: string
-          example: https://smart-campus.local/problems/validation-error
+          format: uri
         title:
           type: string
-          example: Validation error
         status:
           type: integer
           minimum: 400
           maximum: 599
-          example: 422
         detail:
           type: string
-          example: body.value must be less than or equal to 80
         instance:
           type: string
-          example: /readings

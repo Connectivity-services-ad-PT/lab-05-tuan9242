@@ -10,14 +10,15 @@ lint:
 
 # Build Docker image for API only
 build:
-	docker build -t fit4110/iot-ingestion:lab05 .
+	docker build -t fit4110/analytics-service:lab05 .
 
 # Run API container standalone (not via compose)
 run:
-	docker run --rm --name fit4110-api-lab05 -p 8000:8000 --env-file .env.example fit4110/iot-ingestion:lab05
+	docker run --rm --name fit4110-api-lab05 -p 8000:8000 --env-file .env.example fit4110/analytics-service:lab05
 
 # Compose commands
 compose-up:
+	docker network create class-net || true
 	docker compose up -d --build
 
 compose-down:

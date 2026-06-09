@@ -1,0 +1,1083 @@
+{
+  "info": {
+    "_postman_id": "f7af6b1c-8a4e-4394-94aa-015ea0a81bee",
+    "name": "FIT4110 Lab04 - Analytics Contract Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "55220832",
+    "_collection_link": "https://go.postman.co/collection/55220832-f7af6b1c-8a4e-4394-94aa-015ea0a81bee?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "00_Health",
+      "item": [
+        {
+          "name": "Request 1",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response has status ok\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"status\", \"ok\");\r",
+                  "  pm.expect(json).to.have.property(\"service\");\r",
+                  "  pm.expect(json).to.have.property(\"time\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "01_Functional",
+      "item": [
+        {
+          "name": "Request 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "  pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response has eventId and acceptedAt\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"eventId\");\r",
+                  "  pm.expect(json).to.have.property(\"acceptedAt\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"eventType\": \"telemetry.ingested\",\r\n  \"eventId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babc\",\r\n  \"occurredAt\": \"2026-06-01T08:00:00Z\",\r\n  \"correlationId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babe\",\r\n  \"source\": \"campus.iot.telemetry\",\r\n  \"deviceId\": \"SENSOR-001\",\r\n  \"zoneId\": \"ZONE-A\",\r\n  \"metric\": \"temperature\",\r\n  \"value\": 38.5,\r\n  \"unit\": \"celsius\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request 3",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "  pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"AccessEvent accepted with eventId\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"eventId\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"eventType\": \"access.log.created\",\r\n  \"eventId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babd\",\r\n  \"occurredAt\": \"2026-06-01T08:01:00Z\",\r\n  \"correlationId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babf\",\r\n  \"source\": \"campus.access.log\",\r\n  \"gateId\": \"GATE-01\",\r\n  \"cardIdHash\": \"8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918\",\r\n  \"direction\": \"IN\",\r\n  \"decision\": \"ALLOW\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request 4",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 201\", function () {\r",
+                  "  pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Alert created with correct fields\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"id\");\r",
+                  "  pm.expect(json).to.have.property(\"alertType\", \"UNAUTHORIZED_ACCESS\");\r",
+                  "  pm.expect(json).to.have.property(\"severity\", \"HIGH\");\r",
+                  "  pm.expect(json).to.have.property(\"status\", \"OPEN\");\r",
+                  "  pm.expect(json).to.have.property(\"createdAt\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"sourceService\": \"core-business\",\r\n  \"alertType\": \"UNAUTHORIZED_ACCESS\",\r\n  \"severity\": \"HIGH\",\r\n  \"message\": \"Phát hiện truy cập trái phép tại cổng chính\",\r\n  \"relatedEventId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babc\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alerts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alerts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request 5",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response has items array\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"items\");\r",
+                  "  pm.expect(json.items).to.be.an(\"array\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/alerts/recent?limit=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alerts",
+                "recent"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request 6",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response has pagination fields\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"items\");\r",
+                  "  pm.expect(json).to.have.property(\"hasMore\");\r",
+                  "  pm.expect(json.items).to.be.an(\"array\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/alerts?limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alerts"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02_Auth",
+      "item": [
+        {
+          "name": "Request 7",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Valid token returns success\", function () {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/alerts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alerts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request 8",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const env = pm.environment.get(\"env\") || \"mock\";\r",
+                  "if (env === \"mock\") {\r",
+                  "  pm.test(\"Skipped on mock: Prism does not enforce real auth\", function () {\r",
+                  "    pm.expect(true).to.eql(true);\r",
+                  "  });\r",
+                  "} else {\r",
+                  "  pm.test(\"Missing token returns 401 or 403\", function () {\r",
+                  "    pm.expect([401, 403]).to.include(pm.response.code);\r",
+                  "  });\r",
+                  "}\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/alerts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alerts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request 9",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const env = pm.environment.get(\"env\") || \"mock\";\r",
+                  "if (env === \"mock\") {\r",
+                  "  pm.test(\"Skipped on mock: invalid token requires real auth middleware\", function () {\r",
+                  "    pm.expect(true).to.eql(true);\r",
+                  "  });\r",
+                  "} else {\r",
+                  "  pm.test(\"Wrong token returns 401 or 403\", function () {\r",
+                  "    pm.expect([401, 403]).to.include(pm.response.code);\r",
+                  "  });\r",
+                  "}\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer wrong-token-xyz",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"sourceService\": \"core-business\",\r\n  \"alertType\": \"SYSTEM_ERROR\",\r\n  \"severity\": \"LOW\",\r\n  \"message\": \"Test with wrong token\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alerts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alerts"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03_Negative",
+      "item": [
+        {
+          "name": "Request 10",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Invalid eventType returns client error\", function () {\r",
+                  "  pm.expect([400, 422]).to.include(pm.response.code);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Error follows ProblemDetails shape\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"title\");\r",
+                  "  pm.expect(json).to.have.property(\"status\");\r",
+                  "  pm.expect(json.status).to.be.within(400, 599);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Prefer",
+                "value": "code=400",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"eventType\": \"invalid.event.type\",\r\n  \"eventId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babc\",\r\n  \"occurredAt\": \"2026-06-01T08:00:00Z\",\r\n  \"correlationId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babe\",\r\n  \"source\": \"campus.test\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request 11",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Missing required field returns validation error\", function () {\r",
+                  "  pm.expect([400, 422]).to.include(pm.response.code);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Error body has ProblemDetails\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"title\");\r",
+                  "  pm.expect(json).to.have.property(\"status\");\r",
+                  "  pm.expect(json.status).to.be.within(400, 599);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json ",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Prefer",
+                "value": "code=422",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"sourceService\": \"core-business\",\r\n  \"alertType\": \"SYSTEM_ERROR\",\r\n  \"message\": \"Test missing severity field\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alerts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alerts"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request 12",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Invalid alertType enum returns client error\", function () {\r",
+                  "  pm.expect([400, 422]).to.include(pm.response.code);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Error response has detail field\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"title\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Prefer",
+                "value": "code=400",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"sourceService\": \"core-business\",\r\n  \"alertType\": \"INVALID_ALERT_TYPE\",\r\n  \"severity\": \"HIGH\",\r\n  \"message\": \"Test wrong enum value\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/alerts",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alerts"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04_Boundary_Reliability",
+      "item": [
+        {
+          "name": "Request 13",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Max limit 100 is accepted\", function () {\r",
+                  "  pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Response returns items array\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"items\");\r",
+                  "  pm.expect(json.items).to.be.an(\"array\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/alerts/recent?limit=100",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alerts",
+                "recent"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request 14",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Limit above max returns client error\", function () {\r",
+                  "  pm.expect([400, 422]).to.include(pm.response.code);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Prefer",
+                "value": "code=400",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/alerts/recent?limit=101",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "alerts",
+                "recent"
+              ],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "101"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request 15",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Min boundary value -100 is accepted\", function () {\r",
+                  "  pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Boundary: response confirms accepted\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"eventId\");\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"eventType\": \"telemetry.ingested\",\r\n  \"eventId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babc\",\r\n  \"occurredAt\": \"2026-06-01T08:00:00Z\",\r\n  \"correlationId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babe\",\r\n  \"source\": \"campus.iot.telemetry\",\r\n  \"deviceId\": \"SENSOR-001\",\r\n  \"zoneId\": \"ZONE-A\",\r\n  \"metric\": \"temperature\",\r\n  \"value\": -100,\r\n  \"unit\": \"celsius\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Request 16",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Value above max 1000 returns client error\", function () {\r",
+                  "  pm.expect([400, 422]).to.include(pm.response.code);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Boundary test checks response not request body\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"status\");\r",
+                  "  pm.expect(json.status).to.be.within(400, 599);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Prefer",
+                "value": "code=400",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"eventType\": \"telemetry.ingested\",\r\n  \"eventId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babc\",\r\n  \"occurredAt\": \"2026-06-01T08:00:00Z\",\r\n  \"correlationId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babe\",\r\n  \"source\": \"campus.iot.telemetry\",\r\n  \"deviceId\": \"SENSOR-001\",\r\n  \"zoneId\": \"ZONE-A\",\r\n  \"metric\": \"temperature\",\r\n  \"value\": 1001,\r\n  \"unit\": \"celsius\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05_Consumer_side_Smoke",
+      "item": [
+        {
+          "name": "Request 17",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Analytics can reach IoT mock contract\", function () {\r",
+                  "  pm.response.to.have.status(201);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"IoT response has reading_id (contract fulfilled)\", function () {\r",
+                  "  const json = pm.response.json();\r",
+                  "  pm.expect(json).to.have.property(\"reading_id\");\r",
+                  "  pm.expect(json).to.have.property(\"accepted\", true);\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"device_id\": \"ESP32-LAB-A01\",\r\n  \"metric\": \"temperature\",\r\n  \"value\": 31.5,\r\n  \"unit\": \"celsius\",\r\n  \"timestamp\": \"2026-06-01T08:30:00+07:00\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{iotMockUrl}}/readings",
+              "host": [
+                "{{iotMockUrl}}"
+              ],
+              "path": [
+                "readings"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06_Local_only_NonFunctional",
+      "item": [
+        {
+          "name": "Request 18",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const env = pm.environment.get(\"env\") || \"mock\";\r",
+                  "if (env === \"local\") {\r",
+                  "  pm.test(\"Local service responds under 1000ms\", function () {\r",
+                  "    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+                  "  });\r",
+                  "} else {\r",
+                  "  pm.test(\"Skipped on mock: latency not meaningful for Prism\", function () {\r",
+                  "    pm.expect(true).to.eql(true);\r",
+                  "  });\r",
+                  "}\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"eventType\": \"telemetry.ingested\",\r\n  \"eventId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babc\",\r\n  \"occurredAt\": \"2026-06-01T08:00:00Z\",\r\n  \"correlationId\": \"0196fb3d-4ad7-7d1e-9f49-5d5148d2babe\",\r\n  \"source\": \"campus.iot.telemetry\",\r\n  \"deviceId\": \"SENSOR-001\",\r\n  \"zoneId\": \"ZONE-A\",\r\n  \"metric\": \"humidity\",\r\n  \"value\": 55.2,\r\n  \"unit\": \"percent\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/events",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          "const prefix = pm.environment.get('tracePrefix') || 'fit4110-analytics';\r",
+          "pm.variables.set('traceId', prefix + '-' + Date.now());\r",
+          "pm.request.headers.upsert({ key: 'X-Trace-Id', value: pm.variables.get('traceId') });\r",
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
